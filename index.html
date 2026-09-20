@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6f1724">
+  <meta name="description" content="Acarlar Döner ödeme bilgileri">
+  <title>Acarlar Döner | Ödeme Bilgileri</title>
+  <style>
+    :root {
+      --bordo:#6f1724;
+      --bordo-dark:#4d0e18;
+      --krem:#f8f0df;
+      --altin:#c9a24a;
+      --ink:#24191a;
+      --white:#fffdf8;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:linear-gradient(160deg,var(--bordo) 0%, #7d1c2a 48%, var(--krem) 48%, var(--krem) 100%);
+      color:var(--ink); display:flex; align-items:center; justify-content:center; padding:24px 16px;
+    }
+    .card {
+      width:min(100%, 520px); background:rgba(255,253,248,.98); border-radius:24px;
+      box-shadow:0 18px 50px rgba(35,12,15,.22); overflow:hidden; border:1px solid rgba(201,162,74,.45);
+    }
+    header { background:var(--bordo); color:white; padding:28px 24px 24px; text-align:center; }
+    .mark { width:54px;height:54px;border:2px solid var(--altin);border-radius:50%;margin:0 auto 12px;
+      display:grid;place-items:center;color:var(--altin);font-weight:800;font-size:20px; }
+    h1 { margin:0; font-size:28px; letter-spacing:.2px; }
+    .sub { margin:7px 0 0; opacity:.9; font-size:14px; }
+    main { padding:24px; }
+    .label { font-size:13px; color:#705b5d; margin-bottom:7px; font-weight:700; }
+    .value {
+      background:var(--krem); border:1px solid #ead9b4; border-radius:14px; padding:15px 14px;
+      font-size:17px; font-weight:700; overflow-wrap:anywhere;
+    }
+    .iban { letter-spacing:.4px; font-variant-numeric:tabular-nums; }
+    .buttons { display:grid; gap:12px; margin-top:18px; }
+    button {
+      width:100%; border:0; border-radius:14px; padding:16px; font-size:17px; font-weight:800;
+      cursor:pointer; min-height:54px; -webkit-tap-highlight-color:transparent;
+    }
+    .primary { background:var(--bordo); color:white; }
+    .secondary { background:var(--altin); color:#2c1d0a; }
+    button:active { transform:scale(.99); }
+    .manual { margin:16px 0 0; font-size:13px; line-height:1.5; color:#675557; }
+    .status {
+      min-height:24px; margin-top:12px; text-align:center; font-weight:800; color:var(--bordo);
+      font-size:14px;
+    }
+    footer { padding:16px 24px 22px; text-align:center; font-size:12px; color:#78686a; border-top:1px solid #eee2cf; }
+    @media (max-width:380px) {
+      body { padding:12px; } main { padding:18px; } header { padding:24px 18px 20px; }
+      h1 { font-size:25px; } .value { font-size:15px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="card" aria-label="Acarlar Döner ödeme bilgileri">
+    <header>
+      <div class="mark" aria-hidden="true">AD</div>
+      <h1>Acarlar Döner</h1>
+      <p class="sub">Ödeme Bilgileri</p>
+    </header>
+
+    <main>
+      <div class="label">Alıcı adı / ticari unvan</div>
+      <div class="value" id="name">Emirhan Acar</div>
+
+      <div class="label" style="margin-top:18px">IBAN</div>
+      <div class="value iban" id="iban">TR110004601045888000123165</div>
+
+      <div class="buttons">
+        <button class="primary" type="button" onclick="copyText('name','Adı')">Adı kopyala</button>
+        <button class="secondary" type="button" onclick="copyText('iban','IBAN')">IBAN'ı kopyala</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <p class="manual">Otomatik kopyalama çalışmazsa, yukarıdaki bilgiyi parmağınızla seçip kopyalayabilirsiniz.</p>
+    </main>
+
+    <footer>Bu Sayfa Acarlar Döner Tarafından Hazırlanmıştır</footer>
+  </section>
+
+  <script>
+    async function copyText(id, label) {
+      const el = document.getElementById(id);
+      const text = id === 'iban' ? el.textContent.replace(/\s+/g, '') : el.textContent.trim();
+      const status = document.getElementById('status');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text; ta.setAttribute('readonly','');
+          ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, ta.value.length);
+          const ok = document.execCommand('copy'); document.body.removeChild(ta);
+          if (!ok) throw new Error('copy failed');
+        }
+        status.textContent = 'Kopyalandı';
+        clearTimeout(window.copyTimer);
+        window.copyTimer = setTimeout(() => status.textContent = '', 1800);
+      } catch (e) {
+        status.textContent = 'Otomatik kopyalama olmadı; bilgiyi seçerek kopyalayabilirsiniz.';
+      }
+    }
+  </script>
+</body>
+</html>
